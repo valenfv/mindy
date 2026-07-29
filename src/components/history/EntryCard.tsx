@@ -30,15 +30,29 @@ export function EntryCard({ entry }: { entry: JournalEntry }) {
     <Card className="overflow-hidden transition-shadow hover:shadow-lifted">
       <Collapsible.Root open={expanded} onOpenChange={setExpanded}>
         <div className="p-5 sm:p-6">
-          <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-            <h3 className="text-sm font-medium text-muted-foreground">
-              <time dateTime={entry.createdAt}>{formatDateTime(entry.createdAt)}</time>
-            </h3>
-            {relativeDay ? (
-              <Badge variant="outline" className="translate-y-[-1px]">
-                {relativeDay}
-              </Badge>
-            ) : null}
+          <div className="flex items-start justify-between gap-2">
+            <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
+              <h3 className="text-sm font-medium text-muted-foreground">
+                <time dateTime={entry.createdAt}>{formatDateTime(entry.createdAt)}</time>
+              </h3>
+              {relativeDay ? (
+                <Badge variant="outline" className="translate-y-[-1px]">
+                  {relativeDay}
+                </Badge>
+              ) : null}
+            </div>
+
+            {/* Esquina superior derecha: no compite con las acciones principales
+                y evita que en mobile caiga en una fila propia. */}
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setDeleting(true)}
+              aria-label={`Eliminar entrada del ${formatDateTime(entry.createdAt)}`}
+              className="-mr-2 -mt-2.5 shrink-0 text-muted-foreground hover:bg-destructive-soft hover:text-destructive"
+            >
+              <Trash2 aria-hidden="true" />
+            </Button>
           </div>
 
           <p className="mt-2 line-clamp-3 whitespace-pre-wrap break-words text-[0.9375rem] leading-relaxed">
@@ -75,16 +89,6 @@ export function EntryCard({ entry }: { entry: JournalEntry }) {
                 Completar entrada
               </Button>
             ) : null}
-
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setDeleting(true)}
-              className="text-destructive hover:bg-destructive-soft hover:text-destructive sm:ml-auto"
-            >
-              <Trash2 aria-hidden="true" />
-              <span className="sr-only sm:not-sr-only">Eliminar</span>
-            </Button>
           </div>
         </div>
 

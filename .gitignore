@@ -1,0 +1,19 @@
+node_modules
+dist
+dist-ssr
+dev-dist
+*.local
+.DS_Store
+
+# Salida del service worker generada por vite-plugin-pwa
+public/sw.js
+public/workbox-*.js
+
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

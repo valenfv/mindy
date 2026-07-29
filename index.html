@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+
+    <title>Mindy · Diario de pensamientos y emociones</title>
+    <meta
+      name="description"
+      content="Mindy es un diario guiado de pensamientos, emociones y conductas. Tus entradas se guardan únicamente en este dispositivo."
+    />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#faf7f1" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#1a1714" media="(prefers-color-scheme: dark)" />
+
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!-- iOS instalado -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Mindy" />
+    <meta name="format-detection" content="telephone=no" />
+
+    <!-- Pantallas de inicio de iOS -->
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 430px) and (device-height: 932px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+      href="/splash/apple-splash-1290x2796.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 393px) and (device-height: 852px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+      href="/splash/apple-splash-1179x2556.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+      href="/splash/apple-splash-1284x2778.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+      href="/splash/apple-splash-1170x2532.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3) and (orientation: portrait)"
+      href="/splash/apple-splash-1125x2436.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+      href="/splash/apple-splash-828x1792.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+      href="/splash/apple-splash-750x1334.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+      href="/splash/apple-splash-1536x2048.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 834px) and (device-height: 1194px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+      href="/splash/apple-splash-1668x2388.png"
+    />
+    <link
+      rel="apple-touch-startup-image"
+      media="screen and (device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)"
+      href="/splash/apple-splash-2048x2732.png"
+    />
+
+    <script>
+      // Aplica el tema antes del primer paint para evitar un flash de color.
+      ;(function () {
+        try {
+          var stored = localStorage.getItem('mindy:theme')
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+          var dark = stored === 'dark' || (stored !== 'light' && prefersDark)
+          document.documentElement.classList.toggle('dark', dark)
+        } catch (error) {
+          /* Sin acceso a localStorage seguimos con el tema claro. */
+        }
+      })()
+    </script>
+
+    <style>
+      /* Estado de carga de marca: visible antes de que React monte. */
+      #mindy-boot {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-content: center;
+        justify-items: center;
+        gap: 1.25rem;
+        background: #faf7f1;
+        color: #3d6b60;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+      html.dark #mindy-boot {
+        background: #1a1714;
+        color: #7fb8a8;
+      }
+      #mindy-boot svg {
+        width: 72px;
+        height: 72px;
+      }
+      #mindy-boot .mindy-boot-spin {
+        transform-origin: 50% 50%;
+        animation: mindy-boot-spin 2.4s linear infinite;
+      }
+      #mindy-boot p {
+        margin: 0;
+        font-size: 0.875rem;
+        letter-spacing: 0.02em;
+        opacity: 0.75;
+      }
+      @keyframes mindy-boot-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        #mindy-boot .mindy-boot-spin {
+          animation: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div id="mindy-boot" role="status" aria-live="polite">
+        <svg viewBox="0 0 64 64" aria-hidden="true">
+          <g
+            class="mindy-boot-spin"
+            fill="none"
+            stroke-width="5.6"
+            stroke-linecap="round"
+            transform="translate(-3 0)"
+          >
+            <path d="M32 8A24 24 0 0 1 32 56A18 18 0 0 1 32 20" stroke="currentColor" />
+            <path d="M32 20A12 12 0 0 1 32 44" stroke="#c97f4f" />
+          </g>
+        </svg>
+        <p>Abriendo tu diario…</p>
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

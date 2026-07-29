@@ -8,7 +8,7 @@ import type { JournalFormValues } from '@/models/journal'
 export const STEP_FIELDS: readonly (readonly (keyof JournalFormValues)[])[] = [
   ['situation'],
   ['literalThought'],
-  ['feeling', 'emotion', 'customEmotion', 'intensity'],
+  ['feeling', 'emotions', 'customEmotion', 'intensity'],
   ['reaction'],
   ['outcome'],
 ] as const

@@ -9,7 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { formatDateTime, formatRelativeDay } from '@/lib/dates'
-import { describeIntensity, resolveEmotionLabel } from '@/lib/emotions'
+import { describeIntensity, resolveEmotionLabels } from '@/lib/emotions'
 import { canCompleteOutcome } from '@/db/entries'
 import type { JournalEntry } from '@/models/journal'
 
@@ -46,7 +46,11 @@ export function EntryCard({ entry }: { entry: JournalEntry }) {
           </p>
 
           <div className="mt-3 flex flex-wrap items-center gap-2">
-            <Badge variant="neutral">{resolveEmotionLabel(entry)}</Badge>
+            {resolveEmotionLabels(entry).map((label) => (
+              <Badge key={label} variant="neutral">
+                {label}
+              </Badge>
+            ))}
             <Badge variant="outline">
               <span className="tabular-nums">{entry.intensity}/10</span>
               <span className="text-muted-foreground">· {describeIntensity(entry.intensity)}</span>

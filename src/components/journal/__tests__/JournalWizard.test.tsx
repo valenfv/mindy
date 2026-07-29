@@ -77,7 +77,7 @@ describe('validación del formulario', () => {
       await screen.findByRole('textbox', { name: /qué sentiste/i }),
       'Nudo en el estómago.',
     )
-    await user.click(screen.getByRole('radio', { name: 'Otra' }))
+    await user.click(screen.getByRole('checkbox', { name: 'Otra' }))
     await user.click(continuar())
 
     expect(
@@ -92,6 +92,53 @@ describe('validación del formulario', () => {
         name: '¿Qué hiciste cuando empezaste a pensar eso?',
       }),
     ).toBeInTheDocument()
+  })
+})
+
+describe('foco al cambiar de paso', () => {
+  it('lleva el foco al primer campo del paso siguiente', async () => {
+    const user = userEvent.setup()
+    renderWithProviders(<JournalWizard />)
+    await waitForWizard()
+
+    await user.type(
+      screen.getByRole('textbox', { name: /qué estabas haciendo/i }),
+      'Una situación.',
+    )
+    await user.click(continuar())
+
+    // Sin esto el teclado de mobile se cierra al pasar de paso.
+    const thought = await screen.findByRole('textbox', { name: /qué empezaste a pensar/i })
+    await waitFor(() => expect(thought).toHaveFocus())
+
+    await user.type(thought, 'Un pensamiento.')
+    await user.click(continuar())
+
+    const feeling = await screen.findByRole('textbox', { name: /qué sentiste/i })
+    await waitFor(() => expect(feeling).toHaveFocus())
+  })
+
+  it('también lleva el foco al primer campo al volver atrás', async () => {
+    const user = userEvent.setup()
+    renderWithProviders(<JournalWizard />)
+    await waitForWizard()
+
+    await user.type(
+      screen.getByRole('textbox', { name: /qué estabas haciendo/i }),
+      'Una situación.',
+    )
+    await user.click(continuar())
+    await user.click(await screen.findByRole('button', { name: /atrás/i }))
+
+    const situation = await screen.findByRole('textbox', { name: /qué estabas haciendo/i })
+    await waitFor(() => expect(situation).toHaveFocus())
+  })
+
+  it('no roba el foco en el primer render', async () => {
+    renderWithProviders(<JournalWizard />)
+    await waitForWizard()
+
+    expect(screen.getByRole('textbox', { name: /qué estabas haciendo/i })).not.toHaveFocus()
   })
 })
 
@@ -117,7 +164,8 @@ describe('creación de una entrada', () => {
       await screen.findByRole('textbox', { name: /qué sentiste/i }),
       'Se me cerró el pecho.',
     )
-    await user.click(screen.getByRole('radio', { name: 'Ansiedad' }))
+    await user.click(screen.getByRole('checkbox', { name: 'Ansiedad' }))
+    await user.click(screen.getByRole('checkbox', { name: 'Culpa' }))
     await user.click(continuar())
 
     await user.type(
@@ -138,7 +186,7 @@ describe('creación de una entrada', () => {
     expect(entry?.situation).toBe('Estaba por entrar a una reunión.')
     expect(entry?.literalThought).toBe('Esto me va a salir mal.')
     expect(entry?.feeling).toBe('Se me cerró el pecho.')
-    expect(entry?.emotion).toBe('ansiedad')
+    expect(entry?.emotions).toEqual(['ansiedad', 'culpa'])
     expect(entry?.intensity).toBe(5)
     expect(entry?.reaction).toBe('Postergué la reunión.')
     expect(entry?.isOutcomeComplete).toBe(false)

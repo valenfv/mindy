@@ -117,9 +117,15 @@ function randomEntry(daysAgo: number, index: number): JournalEntry {
   createdAt.setDate(createdAt.getDate() - daysAgo)
   createdAt.setHours(randomInt(7, 23), randomInt(0, 59), randomInt(0, 59), 0)
 
-  // Una de cada ocho usa una emoción propia, para cubrir ese caso en la UI.
+  // Entre una y tres emociones de la lista, sin repetir, más «Otra» una de cada
+  // ocho veces: así la UI se ve con una sola emoción y con varias.
   const useCustom = randomInt(1, 8) === 1
-  const emotion: EmotionId = useCustom ? 'otra' : pick(EMOTION_IDS_WITHOUT_OTHER)
+  const picked = new Set<EmotionId>()
+  for (let i = randomInt(1, 3); i > 0; i -= 1) {
+    picked.add(pick(EMOTION_IDS_WITHOUT_OTHER))
+  }
+  if (useCustom) picked.add('otra')
+  const emotions = [...picked]
 
   // Las entradas más viejas suelen estar completas; las de los últimos días, no.
   const complete = daysAgo > 3 ? randomInt(1, 10) <= 7 : randomInt(1, 10) <= 2
@@ -131,7 +137,7 @@ function randomEntry(daysAgo: number, index: number): JournalEntry {
     situation: pick(SITUATIONS),
     literalThought: pick(THOUGHTS),
     feeling: pick(FEELINGS),
-    emotion,
+    emotions,
     ...(useCustom ? { customEmotion: pick(CUSTOM_EMOTIONS) } : {}),
     intensity: randomInt(1, 10) as EmotionIntensity,
     reaction: pick(REACTIONS),

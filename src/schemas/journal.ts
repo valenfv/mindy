@@ -19,7 +19,7 @@ export const journalFormSchema = z
     situation: z.string(),
     literalThought: z.string(),
     feeling: z.string(),
-    emotion: z.union([z.enum(EMOTION_IDS), z.literal('')]),
+    emotions: z.array(z.enum(EMOTION_IDS)),
     customEmotion: z.string(),
     intensity: z.number(),
     reaction: z.string(),
@@ -69,15 +69,15 @@ export const journalFormSchema = z
       }
     }
 
-    if (values.emotion === '') {
+    if (values.emotions.length === 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        path: ['emotion'],
-        message: 'Elegí la emoción que más se acerque a lo que sentiste.',
+        path: ['emotions'],
+        message: 'Elegí al menos una emoción de las que sentiste.',
       })
     }
 
-    if (values.emotion === 'otra') {
+    if (values.emotions.includes('otra')) {
       const custom = values.customEmotion.trim()
       if (custom.length === 0) {
         ctx.addIssue({
@@ -119,19 +119,38 @@ export type OutcomeFormValues = z.input<typeof outcomeSchema>
 /**
  * Validación de los registros que vuelven de IndexedDB. Permite detectar datos
  * corruptos o de una versión incompatible sin romper toda la pantalla.
+ *
+ * El `preprocess` acepta también la forma anterior (`emotion`, una sola). La
+ * migración de la base ya la reescribe, pero un registro que se haya escapado
+ * —por ejemplo por una pestaña vieja abierta durante la actualización— se lee
+ * igual en lugar de contarse como corrupto.
  */
-export const storedEntrySchema = z.object({
-  id: z.string().min(1),
-  createdAt: z.string().min(1),
-  updatedAt: z.string().min(1),
-  situation: z.string(),
-  literalThought: z.string(),
-  feeling: z.string(),
-  emotion: z.enum(EMOTION_IDS),
-  customEmotion: z.string().optional(),
-  intensity: z.number().int().min(1).max(10),
-  reaction: z.string(),
-  outcome: z.string().optional(),
-  isOutcomeComplete: z.boolean(),
-  schemaVersion: z.number().int().min(1).max(CURRENT_SCHEMA_VERSION),
-})
+export const storedEntrySchema = z.preprocess(
+  (value) => {
+    if (typeof value !== 'object' || value === null) return value
+
+    const record = value as Record<string, unknown>
+    if (Array.isArray(record.emotions)) return record
+
+    const { emotion, ...rest } = record
+    return {
+      ...rest,
+      emotions: typeof emotion === 'string' && emotion.length > 0 ? [emotion] : [],
+    }
+  },
+  z.object({
+    id: z.string().min(1),
+    createdAt: z.string().min(1),
+    updatedAt: z.string().min(1),
+    situation: z.string(),
+    literalThought: z.string(),
+    feeling: z.string(),
+    emotions: z.array(z.enum(EMOTION_IDS)).min(1),
+    customEmotion: z.string().optional(),
+    intensity: z.number().int().min(1).max(10),
+    reaction: z.string(),
+    outcome: z.string().optional(),
+    isOutcomeComplete: z.boolean(),
+    schemaVersion: z.number().int().min(1).max(CURRENT_SCHEMA_VERSION),
+  }),
+)

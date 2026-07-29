@@ -22,7 +22,7 @@ describe('isDraftMeaningful', () => {
 
   it('detecta contenido en cualquiera de los campos', () => {
     expect(isDraftMeaningful({ ...EMPTY_FORM_VALUES, situation: 'algo' })).toBe(true)
-    expect(isDraftMeaningful({ ...EMPTY_FORM_VALUES, emotion: 'miedo' })).toBe(true)
+    expect(isDraftMeaningful({ ...EMPTY_FORM_VALUES, emotions: ['miedo'] })).toBe(true)
     expect(isDraftMeaningful({ ...EMPTY_FORM_VALUES, outcome: 'algo' })).toBe(true)
   })
 
@@ -39,7 +39,7 @@ describe('restauración del borrador', () => {
     const draft = await readDraft()
     expect(draft?.step).toBe(3)
     expect(draft?.values.situation).toBe('a medio escribir')
-    expect(draft?.values.emotion).toBe('ansiedad')
+    expect(draft?.values.emotions).toEqual(['ansiedad'])
     expect(draft?.values.intensity).toBe(7)
   })
 
@@ -93,7 +93,7 @@ describe('restauración del borrador', () => {
       values: {
         situation: 'sobrevive',
         literalThought: 42,
-        emotion: 'emocion-inventada',
+        emotions: ['emocion-inventada', 'miedo', 'miedo'],
         intensity: 99,
       },
     } as never)
@@ -101,7 +101,8 @@ describe('restauración del borrador', () => {
     const draft = await readDraft()
     expect(draft?.values.situation).toBe('sobrevive')
     expect(draft?.values.literalThought).toBe('')
-    expect(draft?.values.emotion).toBe('')
+    // Se descartan los identificadores desconocidos y los repetidos.
+    expect(draft?.values.emotions).toEqual(['miedo'])
     expect(draft?.values.intensity).toBe(EMPTY_FORM_VALUES.intensity)
   })
 })

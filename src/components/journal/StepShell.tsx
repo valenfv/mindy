@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ReactNode } from 'react'
+import { type ReactNode } from 'react'
 import { Badge } from '@/components/ui/badge'
 
 interface StepShellProps {
@@ -8,38 +8,19 @@ interface StepShellProps {
   /** Muestra que el paso puede completarse más adelante. */
   optionalLabel?: string
   children: ReactNode
-  /** Mueve el foco al encabezado al entrar al paso. */
-  focusOnMount: boolean
 }
 
 /**
  * Contenedor de un paso del journey.
  *
- * El foco se lleva al encabezado (no al campo) al cambiar de paso: los lectores
- * de pantalla anuncian la pregunta nueva y en mobile no se abre el teclado de
- * golpe. El primer campo queda a un Tab de distancia.
+ * El foco al cambiar de paso lo maneja el wizard, que lo lleva al primer campo
+ * del paso nuevo (ver `JournalWizard`). El encabezado sólo es texto.
  */
-export function StepShell({
-  question,
-  hint,
-  optionalLabel,
-  children,
-  focusOnMount,
-}: StepShellProps) {
-  const headingRef = useRef<HTMLHeadingElement>(null)
-
-  useEffect(() => {
-    if (focusOnMount) headingRef.current?.focus()
-  }, [focusOnMount])
-
+export function StepShell({ question, hint, optionalLabel, children }: StepShellProps) {
   return (
     <div className="animate-step-in motion-reduce:animate-none">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-        <h2
-          ref={headingRef}
-          tabIndex={-1}
-          className="text-balance text-lg font-semibold leading-snug sm:text-xl"
-        >
+        <h2 className="text-balance text-lg font-semibold leading-snug sm:text-xl">
           {question}
         </h2>
         {optionalLabel ? <Badge variant="outline">{optionalLabel}</Badge> : null}

@@ -78,8 +78,10 @@ export function ExportPanel({ entries }: { entries: readonly JournalEntry[] }) {
 
       <CardContent>
         <form onSubmit={onSubmit} noValidate className="space-y-4">
+          {/* `min-w-0` en cada columna: sin eso el ancho intrínseco del campo
+              de fecha manda sobre el de la grilla y desborda la tarjeta. */}
           <div className="grid gap-4 sm:grid-cols-2">
-            <div className="space-y-2">
+            <div className="min-w-0 space-y-2">
               <Label htmlFor="export-from">Fecha desde</Label>
               <Input
                 id="export-from"
@@ -91,7 +93,7 @@ export function ExportPanel({ entries }: { entries: readonly JournalEntry[] }) {
               <FieldError id="export-from-error" message={fromError} />
             </div>
 
-            <div className="space-y-2">
+            <div className="min-w-0 space-y-2">
               <Label htmlFor="export-to">Fecha hasta</Label>
               <Input
                 id="export-to"

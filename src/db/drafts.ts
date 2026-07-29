@@ -7,12 +7,13 @@ import {
 } from '@/models/journal'
 import { EMOTION_IDS } from '@/lib/emotions'
 import { TOTAL_STEPS } from '@/lib/questions'
+import type { EmotionId } from '@/models/journal'
 
 export const EMPTY_FORM_VALUES: JournalFormValues = {
   situation: '',
   literalThought: '',
   feeling: '',
-  emotion: '',
+  emotions: [],
   customEmotion: '',
   intensity: 5,
   reaction: '',
@@ -28,8 +29,28 @@ export function isDraftMeaningful(values: JournalFormValues): boolean {
     values.reaction.trim().length > 0 ||
     values.outcome.trim().length > 0 ||
     values.customEmotion.trim().length > 0 ||
-    values.emotion !== ''
+    values.emotions.length > 0
   )
+}
+
+/**
+ * Emociones de un borrador. Descarta identificadores desconocidos y repetidos,
+ * y acepta la forma anterior (`emotion`, una sola) por si el borrador quedó
+ * escrito antes de la migración.
+ */
+function sanitizeEmotions(source: Record<string, unknown>): EmotionId[] {
+  const known = EMOTION_IDS as readonly string[]
+  const raw = Array.isArray(source.emotions)
+    ? source.emotions
+    : typeof source.emotion === 'string'
+      ? [source.emotion]
+      : []
+
+  const valid = raw.filter(
+    (id): id is EmotionId => typeof id === 'string' && known.includes(id),
+  )
+
+  return [...new Set(valid)]
 }
 
 /**
@@ -45,12 +66,6 @@ function sanitizeValues(values: unknown): JournalFormValues {
   const text = (key: keyof JournalFormValues): string =>
     typeof source[key] === 'string' ? (source[key] as string) : ''
 
-  const emotion = source.emotion
-  const validEmotion =
-    typeof emotion === 'string' && (EMOTION_IDS as readonly string[]).includes(emotion)
-      ? (emotion as JournalFormValues['emotion'])
-      : ''
-
   const intensity = source.intensity
   const validIntensity =
     typeof intensity === 'number' && Number.isInteger(intensity) && intensity >= 1 && intensity <= 10
@@ -61,7 +76,7 @@ function sanitizeValues(values: unknown): JournalFormValues {
     situation: text('situation'),
     literalThought: text('literalThought'),
     feeling: text('feeling'),
-    emotion: validEmotion,
+    emotions: sanitizeEmotions(source),
     customEmotion: text('customEmotion'),
     intensity: validIntensity,
     reaction: text('reaction'),

@@ -12,7 +12,7 @@ import type { JournalFormValues } from '@/models/journal'
  * Paso 3: las tres dimensiones de la emoción en una sola pantalla —qué sentiste,
  * qué emoción fue y con cuánta intensidad—, separadas por reglas suaves.
  */
-export function EmotionStep({ focusOnMount }: { focusOnMount: boolean }) {
+export function EmotionStep() {
   const {
     register,
     formState: { errors },
@@ -24,7 +24,6 @@ export function EmotionStep({ focusOnMount }: { focusOnMount: boolean }) {
     <StepShell
       question="¿Cómo te sentiste?"
       hint="Tres preguntas cortas para poner nombre a lo que pasó por tu cuerpo y tu ánimo."
-      focusOnMount={focusOnMount}
     >
       <div className="space-y-4">
         <div className="space-y-1.5">

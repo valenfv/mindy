@@ -1,5 +1,6 @@
+import Dexie from 'dexie'
 import { beforeEach, describe, expect, it } from 'vitest'
-import { db } from '@/db/db'
+import { db, MindyDatabase } from '@/db/db'
 import {
   buildEntryFromForm,
   canCompleteOutcome,
@@ -51,14 +52,28 @@ describe('buildEntryFromForm', () => {
 
   it('guarda la emoción personalizada sólo cuando la emoción es «otra»', () => {
     const otra = buildEntryFromForm(
-      makeFormValues({ emotion: 'otra', customEmotion: ' desborde ' }),
+      makeFormValues({ emotions: ['otra'], customEmotion: ' desborde ' }),
     )
     expect(otra.customEmotion).toBe('desborde')
 
     const conocida = buildEntryFromForm(
-      makeFormValues({ emotion: 'miedo', customEmotion: 'desborde' }),
+      makeFormValues({ emotions: ['miedo'], customEmotion: 'desborde' }),
     )
     expect(conocida.customEmotion).toBeUndefined()
+  })
+
+  it('guarda todas las emociones elegidas, en orden', () => {
+    const entry = buildEntryFromForm(
+      makeFormValues({ emotions: ['miedo', 'culpa', 'alivio'] }),
+    )
+    expect(entry.emotions).toEqual(['miedo', 'culpa', 'alivio'])
+  })
+
+  it('guarda la emoción personalizada aunque «otra» venga junto a otras', () => {
+    const entry = buildEntryFromForm(
+      makeFormValues({ emotions: ['miedo', 'otra'], customEmotion: 'desborde' }),
+    )
+    expect(entry.customEmotion).toBe('desborde')
   })
 
   it('no permite crear una entrada sin emoción', () => {
@@ -94,6 +109,67 @@ describe('createEntry y readEntries', () => {
     expect(entries).toHaveLength(1)
     expect(entries[0]?.situation).toBe('válida')
     expect(corruptedCount).toBe(1)
+  })
+
+  it('lee una entrada guardada con una sola emoción (esquema v1)', async () => {
+    const { emotions, ...rest } = makeEntry({ id: 'vieja' })
+    await db.entries.put({
+      ...rest,
+      emotion: 'tristeza',
+      schemaVersion: 1,
+    } as never)
+
+    const { entries, corruptedCount } = await readEntries()
+    expect(corruptedCount).toBe(0)
+    expect(entries[0]?.emotions).toEqual(['tristeza'])
+  })
+})
+
+describe('migración del esquema v1 a v2', () => {
+  it('convierte la emoción única de las entradas ya guardadas en una lista', async () => {
+    const dbName = 'mindy-migracion'
+    await db.delete()
+
+    // Base con el esquema viejo, tal como quedó en los dispositivos que ya
+    // venían usando la aplicación.
+    const legacy = new Dexie(dbName)
+    legacy.version(1).stores({ entries: 'id, createdAt', drafts: 'id' })
+    await legacy.open()
+
+    const { emotions, ...rest } = makeEntry({ id: 'vieja' })
+    await legacy.table('entries').put({ ...rest, emotion: 'enojo', schemaVersion: 1 })
+    await legacy.table('drafts').put({
+      id: DRAFT_ID,
+      updatedAt: '2026-05-05T14:30:00.000Z',
+      step: 3,
+      schemaVersion: 1,
+      values: {
+        situation: 'a medio escribir',
+        literalThought: '',
+        feeling: '',
+        emotion: 'culpa',
+        customEmotion: '',
+        intensity: 5,
+        reaction: '',
+        outcome: '',
+      },
+    })
+    legacy.close()
+
+    const migrated = new MindyDatabase(dbName)
+    await migrated.open()
+
+    const entry = await migrated.entries.get('vieja')
+    expect(entry?.emotions).toEqual(['enojo'])
+    expect(entry).not.toHaveProperty('emotion')
+    expect(entry?.schemaVersion).toBe(CURRENT_SCHEMA_VERSION)
+
+    const draft = await migrated.drafts.get(DRAFT_ID)
+    expect(draft?.values.emotions).toEqual(['culpa'])
+    expect(draft?.values.situation).toBe('a medio escribir')
+
+    migrated.close()
+    await Dexie.delete(dbName)
   })
 })
 

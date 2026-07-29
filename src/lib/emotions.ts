@@ -26,18 +26,23 @@ export function getEmotionLabel(id: EmotionId): string {
   return EMOTIONS.find((emotion) => emotion.id === id)?.label ?? id
 }
 
+type EmotionSource = Pick<JournalEntry, 'emotions' | 'customEmotion'>
+
 /**
- * Etiqueta final de la emoción de una entrada: la personalizada cuando el
- * usuario eligió «Otra», o la de la lista en cualquier otro caso.
+ * Etiquetas finales de las emociones de una entrada, en el orden en que se
+ * guardaron. «Otra» se reemplaza por el nombre que escribió la persona.
  */
-export function resolveEmotionLabel(
-  entry: Pick<JournalEntry, 'emotion' | 'customEmotion'>,
-): string {
-  if (entry.emotion === 'otra') {
+export function resolveEmotionLabels(entry: EmotionSource): string[] {
+  return entry.emotions.map((id) => {
+    if (id !== 'otra') return getEmotionLabel(id)
     const custom = entry.customEmotion?.trim()
     return custom && custom.length > 0 ? custom : 'Otra'
-  }
-  return getEmotionLabel(entry.emotion)
+  })
+}
+
+/** Las mismas etiquetas en una sola línea, para el PDF y los textos corridos. */
+export function formatEmotionLabels(entry: EmotionSource): string {
+  return resolveEmotionLabels(entry).join(', ')
 }
 
 export const INTENSITY_REFERENCES: readonly { value: number; label: string }[] = [

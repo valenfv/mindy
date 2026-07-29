@@ -1,4 +1,4 @@
-import { describeIntensity, resolveEmotionLabel } from '@/lib/emotions'
+import { describeIntensity, formatEmotionLabels } from '@/lib/emotions'
 import type { JournalEntry } from '@/models/journal'
 
 /**
@@ -9,7 +9,7 @@ export const QUESTIONS = {
   situation: '¿Qué estabas haciendo o qué estaba pasando?',
   literalThought: '¿Qué empezaste a pensar?',
   feeling: '¿Qué sentiste?',
-  emotion: 'Emoción experimentada',
+  emotion: 'Emociones experimentadas',
   intensity: 'Intensidad',
   reaction: '¿Qué hiciste cuando empezaste a pensar eso?',
   outcome: '¿Qué pasó después?',
@@ -47,7 +47,7 @@ export function toQuestionAnswers(entry: JournalEntry): QuestionAnswer[] {
     { question: QUESTIONS.situation, answer: entry.situation, pending: false },
     { question: QUESTIONS.literalThought, answer: entry.literalThought, pending: false },
     { question: QUESTIONS.feeling, answer: entry.feeling, pending: false },
-    { question: QUESTIONS.emotion, answer: resolveEmotionLabel(entry), pending: false },
+    { question: QUESTIONS.emotion, answer: formatEmotionLabels(entry), pending: false },
     {
       question: QUESTIONS.intensity,
       answer: `${entry.intensity}/10 (${describeIntensity(entry.intensity)})`,

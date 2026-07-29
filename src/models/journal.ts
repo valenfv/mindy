@@ -1,5 +1,10 @@
-/** Versión del esquema persistido. Permite migraciones futuras sin ambigüedad. */
-export const CURRENT_SCHEMA_VERSION = 1
+/**
+ * Versión del esquema persistido. Permite migraciones futuras sin ambigüedad.
+ *
+ * v2: `emotion` (una sola emoción) pasó a ser `emotions` (varias). La migración
+ * vive en `MindyDatabase`.
+ */
+export const CURRENT_SCHEMA_VERSION = 2
 
 export type EmotionIntensity = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
 
@@ -26,8 +31,9 @@ export interface JournalEntry {
   situation: string
   literalThought: string
   feeling: string
-  emotion: EmotionId
-  /** Sólo se usa cuando `emotion` es `otra`. */
+  /** Al menos una; se guardan en el orden de la lista de emociones. */
+  emotions: EmotionId[]
+  /** Sólo se usa cuando `emotions` incluye `otra`. */
   customEmotion?: string
   intensity: EmotionIntensity
   reaction: string
@@ -42,7 +48,7 @@ export interface JournalFormValues {
   situation: string
   literalThought: string
   feeling: string
-  emotion: EmotionId | ''
+  emotions: EmotionId[]
   customEmotion: string
   intensity: number
   reaction: string

@@ -9,10 +9,11 @@ import type { JournalFormValues } from '@/models/journal'
 import { cn } from '@/lib/utils'
 
 /**
- * Selección de emoción como grupo de radios nativos con apariencia de chips.
- * Se eligió radio nativo en lugar de un combobox: el manejo de teclado y de
- * lectores de pantalla viene dado por el navegador, y en mobile las áreas
- * táctiles quedan más grandes que en una lista desplegable.
+ * Selección de emociones como grupo de checkboxes nativos con apariencia de
+ * chips. Se pueden marcar varias: una misma situación suele mezclar más de una
+ * emoción. Se eligió checkbox nativo en lugar de un combobox múltiple: el
+ * manejo de teclado y de lectores de pantalla viene dado por el navegador, y en
+ * mobile las áreas táctiles quedan más grandes que en una lista desplegable.
  */
 export function EmotionField() {
   const {
@@ -21,27 +22,32 @@ export function EmotionField() {
     formState: { errors },
   } = useFormContext<JournalFormValues>()
 
-  const emotion = useWatch({ control, name: 'emotion' })
-  const emotionError = errors.emotion?.message
+  const emotions = useWatch({ control, name: 'emotions' }) ?? []
+  const emotionError = errors.emotions?.message
   const customError = errors.customEmotion?.message
 
   return (
     <div className="space-y-2">
-      <fieldset aria-describedby={emotionError ? 'emotion-error' : undefined}>
+      <fieldset
+        aria-describedby={`emotions-hint${emotionError ? ' emotions-error' : ''}`}
+      >
         <legend className="text-sm font-medium leading-snug">
           {QUESTIONS.emotion}
           <span className="ml-1.5 text-xs font-normal text-muted-foreground">(obligatorio)</span>
         </legend>
+        <p id="emotions-hint" className="mt-1 text-sm text-muted-foreground">
+          Podés elegir todas las que sentiste.
+        </p>
 
         <div className="mt-2 flex flex-wrap gap-1.5">
           {EMOTIONS.map((option) => (
             <label key={option.id} className="cursor-pointer">
               <input
-                type="radio"
+                type="checkbox"
                 value={option.id}
                 aria-invalid={emotionError ? true : undefined}
                 className="peer sr-only"
-                {...register('emotion')}
+                {...register('emotions')}
               />
               <span
                 className={cn(
@@ -57,10 +63,10 @@ export function EmotionField() {
           ))}
         </div>
 
-        <FieldError id="emotion-error" message={emotionError} className="mt-2" />
+        <FieldError id="emotions-error" message={emotionError} className="mt-2" />
       </fieldset>
 
-      {emotion === 'otra' ? (
+      {emotions.includes('otra') ? (
         <div className="animate-fade-in space-y-2 motion-reduce:animate-none">
           <Label htmlFor="customEmotion">¿Cómo la llamarías?</Label>
           <Input

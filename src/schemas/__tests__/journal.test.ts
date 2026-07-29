@@ -38,29 +38,37 @@ describe('journalFormSchema', () => {
     expect(invalidFields(makeFormValues({ situation: '   \n  ' }))).toContain('situation')
   })
 
-  it('exige elegir una emoción', () => {
-    expect(invalidFields(makeFormValues({ emotion: '' }))).toContain('emotion')
+  it('exige elegir al menos una emoción', () => {
+    expect(invalidFields(makeFormValues({ emotions: [] }))).toContain('emotions')
+  })
+
+  it('acepta varias emociones a la vez', () => {
+    expect(
+      invalidFields(makeFormValues({ emotions: ['miedo', 'tristeza', 'culpa'] })),
+    ).toEqual([])
   })
 
   it('exige la emoción personalizada cuando se elige «otra»', () => {
-    expect(invalidFields(makeFormValues({ emotion: 'otra', customEmotion: '' }))).toContain(
-      'customEmotion',
-    )
+    expect(
+      invalidFields(makeFormValues({ emotions: ['otra'], customEmotion: '' })),
+    ).toContain('customEmotion')
   })
 
   it('acepta «otra» con una emoción personalizada', () => {
     expect(
-      invalidFields(makeFormValues({ emotion: 'otra', customEmotion: 'desborde' })),
+      invalidFields(makeFormValues({ emotions: ['otra'], customEmotion: 'desborde' })),
     ).toEqual([])
   })
 
   it('ignora la emoción personalizada si la emoción no es «otra»', () => {
-    expect(invalidFields(makeFormValues({ emotion: 'miedo', customEmotion: '' }))).toEqual([])
+    expect(
+      invalidFields(makeFormValues({ emotions: ['miedo'], customEmotion: '' })),
+    ).toEqual([])
   })
 
   it('limita el largo de la emoción personalizada', () => {
     expect(
-      invalidFields(makeFormValues({ emotion: 'otra', customEmotion: 'a'.repeat(41) })),
+      invalidFields(makeFormValues({ emotions: ['otra'], customEmotion: 'a'.repeat(41) })),
     ).toContain('customEmotion')
   })
 
@@ -68,7 +76,7 @@ describe('journalFormSchema', () => {
     // El refinamiento único garantiza que se evalúe siempre, no sólo cuando el
     // resto del formulario ya está completo.
     const fields = invalidFields(
-      makeFormValues({ situation: '', emotion: 'otra', customEmotion: '' }),
+      makeFormValues({ situation: '', emotions: ['otra'], customEmotion: '' }),
     )
 
     expect(fields).toContain('situation')

@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { ArrowLeft, ArrowRight, Check, History } from 'lucide-react'
-import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useState, type FormEvent } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { toast } from 'sonner'
@@ -87,6 +87,21 @@ export function JournalWizard() {
     },
     [],
   )
+
+  // Al cambiar de paso el foco va al primer campo, no al encabezado: en mobile
+  // el teclado sigue abierto y no hay que volver a tocar la pantalla.
+  // useLayoutEffect y no useEffect porque corre dentro del mismo commit que
+  // monta el campo nuevo; con un hueco sin foco, iOS cierra el teclado.
+  useLayoutEffect(() => {
+    if (!hasNavigated) return
+
+    const [firstField] = fieldsForStep(step)
+    // `intensity` es un slider controlado sin ref registrada; ese paso empieza
+    // igual en `feeling`, así que en la práctica nunca entra por acá.
+    if (!firstField || firstField === 'intensity') return
+
+    form.setFocus(firstField)
+  }, [form, hasNavigated, step])
 
   const goNext = useCallback(async () => {
     const valid = await form.trigger(fieldsForStep(step))
@@ -184,7 +199,6 @@ export function JournalWizard() {
                   question={QUESTIONS.situation}
                   hint="Contá el momento con el detalle que te resulte cómodo: dónde estabas, con quién, qué estaba ocurriendo."
                   placeholder="Estaba por entrar a una reunión y me llegó un mensaje…"
-                  focusOnMount={hasNavigated}
                 />
               ) : null}
 
@@ -195,11 +209,10 @@ export function JournalWizard() {
                   question={QUESTIONS.literalThought}
                   hint="Escribilo de la manera más literal posible, con las mismas palabras que aparecieron en tu cabeza."
                   placeholder="«Esto me va a salir mal y se van a dar cuenta»"
-                  focusOnMount={hasNavigated}
                 />
               ) : null}
 
-              {step === 3 ? <EmotionStep key="emotion" focusOnMount={hasNavigated} /> : null}
+              {step === 3 ? <EmotionStep key="emotion" /> : null}
 
               {step === 4 ? (
                 <TextareaStep
@@ -208,7 +221,6 @@ export function JournalWizard() {
                   question={QUESTIONS.reaction}
                   hint="Qué hiciste, qué dejaste de hacer, qué dijiste o cómo reaccionaste."
                   placeholder="Cancelé la reunión y me quedé mirando el teléfono…"
-                  focusOnMount={hasNavigated}
                 />
               ) : null}
 
@@ -221,7 +233,6 @@ export function JournalWizard() {
                   placeholder="Al día siguiente hablamos y…"
                   optionalLabel="Se puede completar después"
                   rows={6}
-                  focusOnMount={hasNavigated}
                 />
               ) : null}
             </div>

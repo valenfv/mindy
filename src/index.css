@@ -122,6 +122,23 @@
    */
   input[type='date'] {
     position: relative;
+    /*
+     * Safari en iOS le da al control un ancho intrínseco propio —el que ocupa
+     * la fecha con el formato del sistema— que no se achica aunque el campo
+     * tenga `width: 100%`. En pantallas angostas eso desbordaba la tarjeta a lo
+     * ancho. Con `appearance: none` el control se comporta como una caja normal
+     * y `min-width: 0` lo deja encogerse dentro de su contenedor.
+     */
+    -webkit-appearance: none;
+    appearance: none;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  /* El valor viene alineado a la derecha y con ancho propio en iOS. */
+  input[type='date']::-webkit-date-and-time-value {
+    text-align: left;
+    min-width: 0;
   }
 
   input[type='date']::-webkit-calendar-picker-indicator {

@@ -123,7 +123,7 @@ describe('buildExportData', () => {
 
   it('usa la emoción personalizada cuando corresponde', () => {
     const data = buildExportData({
-      entries: [makeEntry({ emotion: 'otra', customEmotion: 'desborde' })],
+      entries: [makeEntry({ emotions: ['otra'], customEmotion: 'desborde' })],
       from: '2026-05-05',
       to: '2026-05-05',
     })
@@ -132,5 +132,20 @@ describe('buildExportData', () => {
       (answer) => answer.question === QUESTIONS.emotion,
     )
     expect(emotion?.answer).toBe('desborde')
+  })
+
+  it('enumera todas las emociones de la entrada', () => {
+    const data = buildExportData({
+      entries: [
+        makeEntry({ emotions: ['miedo', 'culpa', 'otra'], customEmotion: 'desborde' }),
+      ],
+      from: '2026-05-05',
+      to: '2026-05-05',
+    })
+
+    const emotion = data.entries[0]?.answers.find(
+      (answer) => answer.question === QUESTIONS.emotion,
+    )
+    expect(emotion?.answer).toBe('Miedo, Culpa, desborde')
   })
 })

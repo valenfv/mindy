@@ -17,7 +17,6 @@ interface TextareaStepProps {
   ariaLabel?: string
   optionalLabel?: string
   rows?: number
-  focusOnMount: boolean
 }
 
 /**
@@ -32,7 +31,6 @@ export function TextareaStep({
   ariaLabel,
   optionalLabel,
   rows = 6,
-  focusOnMount,
 }: TextareaStepProps) {
   const {
     register,
@@ -53,7 +51,6 @@ export function TextareaStep({
       question={question}
       hint={hint ? <span id={hintId}>{hint}</span> : undefined}
       optionalLabel={optionalLabel}
-      focusOnMount={focusOnMount}
     >
       <Textarea
         id={name}

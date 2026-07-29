@@ -31,8 +31,8 @@ export function buildEntryFromForm(
   values: JournalFormValues,
   now: Date = new Date(),
 ): JournalEntry {
-  if (values.emotion === '') {
-    throw new Error('No se puede crear una entrada sin emoción seleccionada.')
+  if (values.emotions.length === 0) {
+    throw new Error('No se puede crear una entrada sin ninguna emoción seleccionada.')
   }
 
   const timestamp = now.toISOString()
@@ -46,8 +46,8 @@ export function buildEntryFromForm(
     situation: normalizeText(values.situation),
     literalThought: normalizeText(values.literalThought),
     feeling: normalizeText(values.feeling),
-    emotion: values.emotion,
-    ...(values.emotion === 'otra' && customEmotion.length > 0
+    emotions: [...values.emotions],
+    ...(values.emotions.includes('otra') && customEmotion.length > 0
       ? { customEmotion }
       : {}),
     intensity: values.intensity as EmotionIntensity,

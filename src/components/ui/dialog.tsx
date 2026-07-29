@@ -27,22 +27,30 @@ export function DialogContent({
   return (
     <DialogPrimitive.Portal>
       <DialogOverlay />
-      <DialogPrimitive.Content
-        className={cn(
-          'fixed left-1/2 top-1/2 z-50 flex max-h-[calc(100dvh-2rem)] w-[calc(100vw-1.5rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-lifted',
-          'data-[state=open]:animate-step-in',
-          className,
-        )}
-        {...props}
-      >
-        {children}
-        <DialogPrimitive.Close
-          className="absolute right-3 top-3 grid size-10 place-content-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-          aria-label="Cerrar"
+      {/*
+        El centrado va en este contenedor y no en el Content: la animación de
+        entrada usa `transform`, y con `-translate-x-1/2` el primer frame
+        pisaría el centrado y el modal aparecería corrido. `pointer-events-none`
+        deja pasar el clic al overlay para poder cerrar tocando afuera.
+      */}
+      <div className="pointer-events-none fixed inset-0 z-50 grid place-items-center p-3">
+        <DialogPrimitive.Content
+          className={cn(
+            'pointer-events-auto relative flex max-h-full w-full max-w-lg flex-col overflow-hidden rounded-xl border border-border bg-card shadow-lifted',
+            'data-[state=open]:animate-step-in',
+            className,
+          )}
+          {...props}
         >
-          <X aria-hidden="true" className="size-5" />
-        </DialogPrimitive.Close>
-      </DialogPrimitive.Content>
+          {children}
+          <DialogPrimitive.Close
+            className="absolute right-3 top-3 grid size-10 place-content-center rounded-full text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            aria-label="Cerrar"
+          >
+            <X aria-hidden="true" className="size-5" />
+          </DialogPrimitive.Close>
+        </DialogPrimitive.Content>
+      </div>
     </DialogPrimitive.Portal>
   )
 }

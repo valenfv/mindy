@@ -26,8 +26,8 @@ export function EmotionStep({ focusOnMount }: { focusOnMount: boolean }) {
       hint="Tres preguntas cortas para poner nombre a lo que pasó por tu cuerpo y tu ánimo."
       focusOnMount={focusOnMount}
     >
-      <div className="space-y-6">
-        <div className="space-y-2">
+      <div className="space-y-4">
+        <div className="space-y-1.5">
           <Label htmlFor="feeling">
             {QUESTIONS.feeling}
             <span className="ml-1.5 text-xs font-normal text-muted-foreground">(obligatorio)</span>
@@ -37,13 +37,13 @@ export function EmotionStep({ focusOnMount }: { focusOnMount: boolean }) {
           </p>
           <Textarea
             id="feeling"
-            rows={4}
+            rows={3}
             placeholder="Se me cerró el pecho y me costaba respirar…"
             aria-invalid={feelingError ? true : undefined}
             aria-describedby={
               feelingError ? 'feeling-hint feeling-error' : 'feeling-hint'
             }
-            className="min-h-[6.5rem] resize-y"
+            className="min-h-[5rem] resize-y"
             {...register('feeling')}
           />
           <FieldError id="feeling-error" message={feelingError} />

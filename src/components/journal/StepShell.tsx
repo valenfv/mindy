@@ -38,7 +38,7 @@ export function StepShell({
         <h2
           ref={headingRef}
           tabIndex={-1}
-          className="text-balance text-xl font-semibold leading-snug sm:text-2xl"
+          className="text-balance text-lg font-semibold leading-snug sm:text-xl"
         >
           {question}
         </h2>
@@ -46,10 +46,10 @@ export function StepShell({
       </div>
 
       {hint ? (
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{hint}</p>
+        <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{hint}</p>
       ) : null}
 
-      <div className="mt-5">{children}</div>
+      <div className="mt-3.5">{children}</div>
     </div>
   )
 }

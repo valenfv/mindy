@@ -164,14 +164,14 @@ export function JournalWizard() {
 
   return (
     <FormProvider {...form}>
-      <div className="space-y-4">
+      <div className="space-y-3">
         <Card className="overflow-hidden">
-          <div className="border-b border-border/70 bg-secondary/30 p-5 sm:p-6">
-            <Stepper currentStep={step} onSelectStep={goToStep} />
+          <div className="border-b border-border/70 bg-secondary/30 px-4 py-3 sm:px-6">
+            <Stepper currentStep={step} />
           </div>
 
           <form onSubmit={onSubmit} noValidate>
-            <div className="p-5 sm:p-7">
+            <div className="p-4 sm:px-6 sm:py-5">
               {/* Anuncio del cambio de paso para lectores de pantalla. */}
               <p className="sr-only" aria-live="polite">
                 Paso {step} de {TOTAL_STEPS}: {currentStepName}
@@ -226,7 +226,7 @@ export function JournalWizard() {
               ) : null}
             </div>
 
-            <div className="flex flex-col-reverse gap-3 border-t border-border/70 bg-secondary/20 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+            <div className="flex flex-col-reverse gap-2 border-t border-border/70 bg-secondary/20 p-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
               {step > 1 ? (
                 <Button type="button" variant="ghost" onClick={goBack} disabled={saving}>
                   <ArrowLeft aria-hidden="true" />
@@ -252,7 +252,7 @@ export function JournalWizard() {
         </Card>
 
         {draftRestored ? (
-          <Card className="flex flex-wrap items-center justify-between gap-3 border-primary/25 bg-primary-soft/50 p-4">
+          <Card className="flex flex-wrap items-center justify-between gap-3 border-primary/25 bg-primary-soft/50 p-3">
             <p className="flex items-center gap-2 text-sm text-foreground">
               <History aria-hidden="true" className="size-4 shrink-0 text-primary" />
               Retomamos donde habías dejado.
@@ -275,7 +275,7 @@ export function JournalWizard() {
         ) : null}
 
         {storageWarning ? (
-          <Card className="border-accent/30 bg-accent-soft/50 p-4">
+          <Card className="border-accent/30 bg-accent-soft/50 p-3">
             <p className="text-sm leading-relaxed text-accent-strong">{storageWarning}</p>
           </Card>
         ) : null}

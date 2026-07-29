@@ -11,6 +11,9 @@ export function Input({ className, type = 'text', ...props }: ComponentProps<'in
         'focus-visible:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:ring-offset-0',
         'disabled:cursor-not-allowed disabled:opacity-60',
         'aria-[invalid=true]:border-destructive aria-[invalid=true]:ring-destructive/30',
+        // Espacio para el ícono del calendario, que va anclado a la derecha
+        // (ver la regla de `input[type='date']` en index.css).
+        type === 'date' && 'pr-11',
         className,
       )}
       {...props}

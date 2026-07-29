@@ -14,6 +14,14 @@ if (!container) {
 // Quita el estado de carga previo a React recién cuando hay algo que mostrar.
 container.replaceChildren()
 
+// `window.mindyMock` para cargar datos de prueba. La condición es estática, así
+// que el build de producción descarta la rama y el módulo no se incluye.
+if (import.meta.env.DEV) {
+  void import('@/dev/mockData').then(({ installMockDataTools }) => {
+    installMockDataTools()
+  })
+}
+
 createRoot(container).render(
   <StrictMode>
     <ErrorBoundary>

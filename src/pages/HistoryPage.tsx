@@ -1,21 +1,50 @@
 import { TriangleAlert } from 'lucide-react'
-import { useEffect } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { LoadingScreen } from '@/components/common/LoadingScreen'
 import { ErrorState } from '@/components/common/ErrorState'
 import { DangerZone } from '@/components/history/DangerZone'
 import { EmptyHistory } from '@/components/history/EmptyHistory'
 import { EntryCard } from '@/components/history/EntryCard'
 import { ExportPanel } from '@/components/history/ExportPanel'
+import { HistoryPagination } from '@/components/history/HistoryPagination'
 import { PrivacyNote } from '@/components/layout/PrivacyNote'
 import { Card } from '@/components/ui/card'
 import { useEntries } from '@/hooks/useEntries'
 
+/** Entradas por página del historial. */
+const PAGE_SIZE = 10
+
 export default function HistoryPage() {
   const { status, entries, corruptedCount, errorMessage } = useEntries()
+  const [page, setPage] = useState(1)
+  const listHeadingRef = useRef<HTMLHeadingElement>(null)
+  // Sólo movemos el foco cuando el cambio de página lo pidió la persona.
+  const focusListOnRender = useRef(false)
 
   useEffect(() => {
     document.title = 'Mindy · Historial'
   }, [])
+
+  const totalPages = Math.max(1, Math.ceil(entries.length / PAGE_SIZE))
+  // Si se borran entradas y la página actual queda vacía, mostramos la última.
+  const currentPage = Math.min(page, totalPages)
+  const firstIndex = (currentPage - 1) * PAGE_SIZE
+  const visibleEntries = entries.slice(firstIndex, firstIndex + PAGE_SIZE)
+
+  const goToPage = useCallback(
+    (next: number) => {
+      focusListOnRender.current = true
+      setPage(Math.min(Math.max(next, 1), totalPages))
+    },
+    [totalPages],
+  )
+
+  useEffect(() => {
+    if (!focusListOnRender.current) return
+    focusListOnRender.current = false
+    listHeadingRef.current?.focus()
+    listHeadingRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' })
+  }, [currentPage])
 
   if (status === 'loading') {
     return (
@@ -70,18 +99,42 @@ export default function HistoryPage() {
 
       {status === 'ready' && entries.length > 0 ? (
         <>
-          <section aria-label="Entradas registradas">
+          <section aria-label="Exportación">
+            <ExportPanel entries={entries} />
+          </section>
+
+          <section aria-labelledby="history-list-heading" className="space-y-4">
+            <h2
+              id="history-list-heading"
+              ref={listHeadingRef}
+              tabIndex={-1}
+              className="text-base font-semibold"
+            >
+              Entradas registradas
+              {totalPages > 1 ? (
+                <span className="ml-2 text-sm font-normal text-muted-foreground">
+                  Página <span className="tabular-nums">{currentPage}</span> de{' '}
+                  <span className="tabular-nums">{totalPages}</span>
+                </span>
+              ) : null}
+            </h2>
+
             <ul className="space-y-4">
-              {entries.map((entry) => (
+              {visibleEntries.map((entry) => (
                 <li key={entry.id}>
                   <EntryCard entry={entry} />
                 </li>
               ))}
             </ul>
-          </section>
 
-          <section aria-label="Exportación" className="pt-2">
-            <ExportPanel entries={entries} />
+            <HistoryPagination
+              page={currentPage}
+              totalPages={totalPages}
+              from={firstIndex + 1}
+              to={firstIndex + visibleEntries.length}
+              total={entries.length}
+              onPageChange={goToPage}
+            />
           </section>
 
           <section aria-label="Privacidad y datos">

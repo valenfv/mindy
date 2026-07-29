@@ -24,7 +24,7 @@ export function IntensityField() {
       control={control}
       name="intensity"
       render={({ field }) => (
-        <div className="space-y-3">
+        <div className="space-y-2">
           <div className="flex items-end justify-between gap-4">
             <div>
               <p className="text-sm font-medium leading-snug" id="intensity-label">
@@ -38,7 +38,7 @@ export function IntensityField() {
               </p>
             </div>
 
-            <p className="shrink-0 font-serif text-3xl font-semibold leading-none tabular-nums text-primary">
+            <p className="shrink-0 font-serif text-2xl font-semibold leading-none tabular-nums text-primary">
               {field.value}
               <span className="text-lg font-normal text-muted-foreground">/10</span>
             </p>

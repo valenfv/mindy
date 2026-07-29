@@ -31,7 +31,7 @@ export function TextareaStep({
   placeholder,
   ariaLabel,
   optionalLabel,
-  rows = 7,
+  rows = 6,
   focusOnMount,
 }: TextareaStepProps) {
   const {
@@ -62,7 +62,7 @@ export function TextareaStep({
         aria-label={ariaLabel ?? question}
         aria-invalid={error ? true : undefined}
         aria-describedby={[hintId, error ? errorId : undefined].filter(Boolean).join(' ') || undefined}
-        className="min-h-[9.5rem] resize-y sm:min-h-[11rem]"
+        className="min-h-[8rem] resize-y sm:min-h-[9.5rem]"
         {...register(name)}
       />
 

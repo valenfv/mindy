@@ -26,14 +26,14 @@ export function EmotionField() {
   const customError = errors.customEmotion?.message
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       <fieldset aria-describedby={emotionError ? 'emotion-error' : undefined}>
         <legend className="text-sm font-medium leading-snug">
           {QUESTIONS.emotion}
           <span className="ml-1.5 text-xs font-normal text-muted-foreground">(obligatorio)</span>
         </legend>
 
-        <div className="mt-3 flex flex-wrap gap-2">
+        <div className="mt-2 flex flex-wrap gap-1.5">
           {EMOTIONS.map((option) => (
             <label key={option.id} className="cursor-pointer">
               <input

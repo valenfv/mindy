@@ -14,16 +14,20 @@ export function AlertDialogContent({
   return (
     <AlertDialogPrimitive.Portal>
       <AlertDialogPrimitive.Overlay className="fixed inset-0 z-50 bg-foreground/35 backdrop-blur-[2px] data-[state=open]:animate-fade-in" />
-      <AlertDialogPrimitive.Content
-        className={cn(
-          'fixed left-1/2 top-1/2 z-50 w-[calc(100vw-1.5rem)] max-w-md -translate-x-1/2 -translate-y-1/2 rounded-xl border border-border bg-card p-5 shadow-lifted sm:p-6',
-          'data-[state=open]:animate-step-in',
-          className,
-        )}
-        {...props}
-      >
-        {children}
-      </AlertDialogPrimitive.Content>
+      {/* Centrado en el contenedor: la animación usa `transform` y pisaría un
+          `-translate-x-1/2` en el propio Content. */}
+      <div className="pointer-events-none fixed inset-0 z-50 grid place-items-center p-3">
+        <AlertDialogPrimitive.Content
+          className={cn(
+            'pointer-events-auto relative max-h-full w-full max-w-md overflow-y-auto rounded-xl border border-border bg-card p-5 shadow-lifted sm:p-6',
+            'data-[state=open]:animate-step-in',
+            className,
+          )}
+          {...props}
+        >
+          {children}
+        </AlertDialogPrimitive.Content>
+      </div>
     </AlertDialogPrimitive.Portal>
   )
 }

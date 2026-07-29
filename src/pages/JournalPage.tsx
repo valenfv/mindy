@@ -8,10 +8,10 @@ export default function JournalPage() {
   }, [])
 
   return (
-    <main className="container max-w-2xl py-6 sm:py-10">
+    <main className="container max-w-2xl py-4 sm:py-6">
       <h1 className="sr-only">Registrar una experiencia en Mindy</h1>
 
-      <div className="mb-5 space-y-1.5">
+      <div className="mb-3 space-y-1">
         <p className="font-serif text-lg font-medium leading-snug sm:text-xl">
           Tomate un momento para registrar lo que pasó.
         </p>
@@ -23,7 +23,7 @@ export default function JournalPage() {
 
       <JournalWizard />
 
-      <PrivacyNote className="mt-8" />
+      <PrivacyNote className="mt-6" />
     </main>
   )
 }

@@ -114,6 +114,36 @@
     @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
   }
 
+  /*
+   * En WebKit/Blink el ícono del calendario se dibuja pegado al texto de la
+   * fecha, no en el borde del campo. Acá se posiciona sobre la derecha; el
+   * espacio que necesita lo reserva `Input` con `pr-11` (tiene que ser una
+   * utilidad de Tailwind: la capa utilities le gana al padding de base).
+   */
+  input[type='date'] {
+    position: relative;
+  }
+
+  input[type='date']::-webkit-calendar-picker-indicator {
+    position: absolute;
+    right: 0.875rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    opacity: 0.55;
+    transition: opacity 150ms ease-out;
+  }
+
+  input[type='date']::-webkit-calendar-picker-indicator:hover,
+  input[type='date']:focus-visible::-webkit-calendar-picker-indicator {
+    opacity: 1;
+  }
+
+  /* El glifo del indicador es oscuro y fijo: en tema oscuro hay que invertirlo. */
+  .dark input[type='date']::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
+
   /* Áreas de scroll discretas. */
   ::-webkit-scrollbar {
     width: 10px;
